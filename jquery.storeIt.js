@@ -1,5 +1,5 @@
 ﻿/*
-* jQuery StoreIt Plugin - v0.0.1
+* jQuery StoreIt Plugin - v0.1.0
 * Abstraction of browser storage options - localStorage & cookies (NYI)
 *
 * Copyright (c) 2011 Matthew Mirande
