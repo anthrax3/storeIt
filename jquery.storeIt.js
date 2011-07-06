@@ -1,4 +1,5 @@
-﻿/*
+//
+/*
 * jQuery StoreIt Plugin - v0.1.0
 * Abstraction of browser storage options - localStorage & cookies (NYI)
 *
