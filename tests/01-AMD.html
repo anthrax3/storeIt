@@ -1,0 +1,115 @@
+<!doctype html>
+<head>
+    <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css" media="screen">
+    <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-git.js"></script>
+
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/0.27.1/require.min.js"></script>
+
+    <script>
+        require.config({
+            paths : {
+                'jquery' : 'http://code.jquery.com/jquery-latest'
+            }
+        });
+        require([ 'jquery', '../jquery.storeIt' ], function( $ ) {
+            // SETUP //////////////////////////////////////////////////////
+            $.storeIt("clear");
+            var testObj = {
+                str  : "my string",
+                int  : 666,
+                bool : true,
+                obj  : {
+                    subStr  : "my nested string",
+                    subInt  : 333,
+                    subBool : true,
+                    subObj  : {
+                        subSubStr  : "my double-nested string",
+                        subSubInt  : 111,
+                        subSubBool : true
+                    }
+                }
+            };
+
+            // TESTS //////////////////////////////////////////////////////
+            test("Set, Get, and Remove Simple Key/Val", function(){
+                var isSet,
+                isDeleted;
+
+                $.storeIt("set", {"test01" : testObj.str});
+                isSet = $.storeIt("get", "test01") === testObj.str ? true : false;
+                $.storeIt("rm", "test01");
+                isDeleted = !$.storeIt("get", "test01");
+
+                ok(isSet, "test01 key was set and retreived");
+                ok(isDeleted, "test01 key was deleted");
+            });
+
+            test("Set, Get, and Clear Complex Object", function(){
+                var isCleared,
+                isEmpty,
+                myObj,
+                testVal;
+
+                $.storeIt("set", testObj);
+                myObj = $.storeIt("get");
+                //myObj.str = "wuuuuut??";
+
+                $.storeIt("clear");
+                testVal = $.storeIt("get");
+                //testVal.ding = "dong!";
+
+                isEmpty = $.isEmptyObject(testVal);
+                for(var key in testVal) {
+                    isCleared = !testVal.hasOwnProperty(key);
+                    ok(isCleared, "Store no longer contains '" + key + "' prop");
+                }
+
+                deepEqual(myObj, testObj, "Retrieved object matches source obj");
+                ok(isEmpty, "Store is empty");
+            });
+
+            test("Set, Get and Remove (nyi) nested key, remove multiple keys.", function(){
+                var isMultRemoved,
+                isNestRemoved,
+                mySubVal;
+
+                $.storeIt("set", testObj);
+                $.storeIt("rm", ["str", "int"]);
+                //$.fn.storeIt("set", {"str" : "wuuuuut!?"});
+
+                isMultRemoved = !$.storeIt("get", "str") && !$.storeIt("get", "int");
+
+                mySubVal = $.storeIt("get", "obj.subObj.subSubStr");
+                $.storeIt("rm", "obj.subObj.subSubStr");
+                isNestRemoved = !$.storeIt("get", "obj.subObj.subSubStr") && $.storeIt("get", "obj.subObj.subSubBool");
+
+                $.storeIt("clear");
+                //console.log($.fn.storeIt("get"));
+
+                ok(mySubVal === testObj.obj.subObj.subSubStr, "Nested key was set");
+                ok(isNestRemoved, "Nested key was removed (nyi)");
+                ok(isMultRemoved, "Multiple keys were removed");
+            });
+
+            test("Find value within store (nyi)", function(){
+                var hasVal,
+                searchVal = "my";
+
+                $.storeIt("set", testObj);
+                hasVal = $.storeIt("indexOf", searchVal) > -1 ? true : false;
+                $.storeIt("clear");
+
+                ok(hasVal, "Found value '" + searchVal + "' at position " + hasVal + " (nyi)");
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1 id="qunit-header">jQuery StoreIt Plugin: Test Suite</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture"></div>
+</body>
+</html>
